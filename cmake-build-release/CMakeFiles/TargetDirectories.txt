@@ -1,0 +1,3 @@
+D:/OneDrive - Technion/Semester 2/PC and OS/hw todo/hw3/cmake-build-release/CMakeFiles/lab.dir
+D:/OneDrive - Technion/Semester 2/PC and OS/hw todo/hw3/cmake-build-release/CMakeFiles/edit_cache.dir
+D:/OneDrive - Technion/Semester 2/PC and OS/hw todo/hw3/cmake-build-release/CMakeFiles/rebuild_cache.dir
