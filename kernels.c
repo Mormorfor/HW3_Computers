@@ -123,42 +123,83 @@ void eight_rotate(int dim, pixel *src, pixel *dst){
     }
 }
 
-char oneloop_rotate_descr[] = "oneloop_rotate: Current working version";
-void oneloop_rotate(int dim, pixel *src, pixel *dst){
-    int k;
-    double dev = 1/(double)dim;
-    int limit = dim * dim;
-    int calc = dim - 1;
-    for(k=0; k < limit; k++){
-        int div = k * dev;
-        int mod = k % dim;
-        dst[RIDX(calc-div, mod, dim)] = src[RIDX(mod, div, dim)];
-
-    }
-
-}
-char copy_rotate_descr[] = "copy_rotate: Current working version";
-void copy_rotate(int dim, pixel *src, pixel *dst) {
-    int i, j;
-    int temp_dim = dim - 1;
-    int lim = dim * dim;
-    pixel *copy;
-
-    for (i = 0; i < dim; i++) {
-        for (j = 0; j < dim; j++) {
-            copy[RIDX(i, j, dim)] = src[RIDX(i, j, dim)];
-
-            dst[RIDX(dim - 1 - j, i, dim)] = copy[RIDX(i, j, dim)];
+char zone_rotate_descr[] = "zone_rotate: Current working version";
+void zone_rotate(int dim, pixel *src, pixel *dst) {
+    int i, j, i2, j2, i3, j3, i4, j4, i5, j5;
+    int k = 0;
+    for(i=k; i < dim-k;i++ ){
+        for(j=i; j<dim-i; j++){
+            i2= dim - 1 - j, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i, j, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i4= dim - 1 - j3, j4 = i3;
+            dst[RIDX(i4, j4, dim)] = src[RIDX(i3, j3, dim)];
+            i5= dim - 1 - j4, j5 = i4;
+            dst[RIDX(i5, j5, dim)] = src[RIDX(i4, j4, dim)];
         }
+        k++;
     }
-  //  for (i = 0; i < dim; i++) {
-   //      for (j = 0; j < dim; j++) {
-  //          dst[RIDX(temp_dim - j, i, dim)] = copy[i + j];
-   //     }
-   // }
 
 }
 
+char zone4_rotate_descr[] = "zone4_rotate: Current working version";
+void zone4_rotate(int dim, pixel *src, pixel *dst) {
+    int i, j, i2, j2, i3, j3;
+    int k = 0;
+    int temp_dim = dim - 3;
+    for(i=k; i < dim-k;i++ ){
+        for(j=i; j< temp_dim - i ; j+=4){
+            i2= dim - 1 - j, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i, j, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i2= dim - 1 - j3, j2 = i3;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i3, j3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+
+            i2= dim - 1 - j - 1, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i, j  + 1, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i2= dim - 1 - j3, j2 = i3;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i3, j3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+
+            i2= dim - 1 - j - 2, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i, j  + 2, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i2= dim - 1 - j3, j2 = i3;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i3, j3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+
+            i2= dim - 1 - j - 3, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i , j + 3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i2= dim - 1 - j3, j2 = i3;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i3, j3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+        }
+        for( ; j<dim-i ; j++) {
+            i2 = dim - 1 - j, j2 = i;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i, j, dim)];
+            i3 = dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+            i2= dim - 1 - j3, j2 = i3;
+            dst[RIDX(i2, j2, dim)] = src[RIDX(i3, j3, dim)];
+            i3= dim - 1 - j2, j3 = i2;
+            dst[RIDX(i3, j3, dim)] = src[RIDX(i2, j2, dim)];
+        }
+        k++;
+    }
+
+}
 
 /*********************************************************************
  * register_rotate_functions - Register all of your different versions
@@ -175,9 +216,8 @@ void register_rotate_functions()
     add_rotate_function(&three_rotate, three_rotate_descr);
     add_rotate_function(&four_rotate, four_rotate_descr);
     add_rotate_function(&eight_rotate, eight_rotate_descr);
-    add_rotate_function(&oneloop_rotate, oneloop_rotate_descr);
-    add_rotate_function(&copy_rotate, copy_rotate_descr);
-
+    add_rotate_function(&zone_rotate, zone_rotate_descr);
+    add_rotate_function(&zone4_rotate, zone4_rotate_descr);
     /* ... Register additional test functions here */
 }
 
