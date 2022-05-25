@@ -4,8 +4,8 @@
 
 #include "defs.h"
 
-/* 
- * Please fill in the following team struct 
+/*
+ * Please fill in the following team struct
  */
 team_t team = {
     "Diana and Nika",              /* Team name */
@@ -25,11 +25,11 @@ team_t team = {
  * Your different versions of the rotate kernel go here
  ******************************************************/
 
-/* 
- * naive_rotate - The naive baseline version of rotate 
+/*
+ * naive_rotate - The naive baseline version of rotate
  */
 char naive_rotate_descr[] = "naive_rotate: Naive baseline implementation";
-void naive_rotate(int dim, pixel *src, pixel *dst) 
+void naive_rotate(int dim, pixel *src, pixel *dst)
 {
     int i, j;
 
@@ -38,12 +38,12 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
 	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
 }
 
-/* 
+/*
  * rotate - Your current working version of rotate
  * IMPORTANT: This is the version you will be graded on
  */
 char rotate_descr[] = "rotate: Current working version";
-void rotate(int dim, pixel *src, pixel *dst) 
+void rotate(int dim, pixel *src, pixel *dst)
 {
     int i, j;
     int temp_dim = dim - 1;
@@ -86,29 +86,16 @@ void four_rotate(int dim, pixel *src, pixel *dst){
     for (j = 0; j < dim; j++) {
         calc = temp_dim - j;
         for (i = 0; i < loop_lim; i+=4) {
-            dst[RIDX(calc, i, dim)] = src[RIDX(i, j, dim)];
-            dst[RIDX(calc, i + 1, dim)] = src[RIDX(i + 1 , j, dim)];
-            dst[RIDX(calc, i + 2 , dim)] = src[RIDX(i + 2, j, dim)];
-            dst[RIDX(calc, i + 3 , dim)] = src[RIDX(i + 3, j, dim)];
+            int help = calc * dim;
+            dst[help  + i] = src[RIDX(i, j, dim)];
+            dst[help +  i + 1] = src[RIDX(i + 1 , j, dim)];
+            dst[help +  i + 2] = src[RIDX(i + 2, j, dim)];
+            dst[help +  i + 3] = src[RIDX(i + 3, j, dim)];
 
         }
         for( ; i < dim; i++)
             dst[RIDX(temp_dim - j, i, dim)] = src[RIDX(i, j, dim)];
     }
-}
-char oneloop_rotate_descr[] = "oneloop_rotate: Current working version";
-void oneloop_rotate(int dim, pixel *src, pixel *dst){
-    int k;
-    double dev = 1/(double)dim;
-    int limit = dim * dim;
-    int calc = dim - 1;
-    for(k=0; k < limit; k++){
-        int div = k * dev;
-        int mod = k%dim;
-        dst[RIDX(calc-div, mod, dim)] = src[RIDX(mod, div, dim)];
-
-    }
-
 }
 
 char eight_rotate_descr[] = "eight_rotate: Current working version";
@@ -136,22 +123,61 @@ void eight_rotate(int dim, pixel *src, pixel *dst){
     }
 }
 
+char oneloop_rotate_descr[] = "oneloop_rotate: Current working version";
+void oneloop_rotate(int dim, pixel *src, pixel *dst){
+    int k;
+    double dev = 1/(double)dim;
+    int limit = dim * dim;
+    int calc = dim - 1;
+    for(k=0; k < limit; k++){
+        int div = k * dev;
+        int mod = k % dim;
+        dst[RIDX(calc-div, mod, dim)] = src[RIDX(mod, div, dim)];
+
+    }
+
+}
+char copy_rotate_descr[] = "copy_rotate: Current working version";
+void copy_rotate(int dim, pixel *src, pixel *dst) {
+    int i, j;
+    int temp_dim = dim - 1;
+    int lim = dim * dim;
+    pixel *copy;
+
+    for (i = 0; i < dim; i++) {
+        for (j = 0; j < dim; j++) {
+            copy[RIDX(i, j, dim)] = src[RIDX(i, j, dim)];
+
+            dst[RIDX(dim - 1 - j, i, dim)] = copy[RIDX(i, j, dim)];
+        }
+    }
+  //  for (i = 0; i < dim; i++) {
+   //      for (j = 0; j < dim; j++) {
+  //          dst[RIDX(temp_dim - j, i, dim)] = copy[i + j];
+   //     }
+   // }
+
+}
+
+
 /*********************************************************************
  * register_rotate_functions - Register all of your different versions
  *     of the rotate kernel with the driver by calling the
  *     add_rotate_function() for each test function. When you run the
  *     driver program, it will test and report the performance of each
- *     registered test function.  
+ *     registered test function.
  *********************************************************************/
 
-void register_rotate_functions() 
+void register_rotate_functions()
 {
-    add_rotate_function(&naive_rotate, naive_rotate_descr);   
+    add_rotate_function(&naive_rotate, naive_rotate_descr);
     add_rotate_function(&rotate, rotate_descr);
     add_rotate_function(&three_rotate, three_rotate_descr);
     add_rotate_function(&four_rotate, four_rotate_descr);
     add_rotate_function(&eight_rotate, eight_rotate_descr);
     add_rotate_function(&oneloop_rotate, oneloop_rotate_descr);
+    add_rotate_function(&copy_rotate, copy_rotate_descr);
+
     /* ... Register additional test functions here */
 }
 
@@ -177,21 +203,21 @@ typedef struct {
 static int min(int a, int b) { return (a < b ? a : b); }
 static int max(int a, int b) { return (a > b ? a : b); }
 
-/* 
- * initialize_pixel_sum - Initializes all fields of sum to 0 
+/*
+ * initialize_pixel_sum - Initializes all fields of sum to 0
  */
-static void initialize_pixel_sum(pixel_sum *sum) 
+static void initialize_pixel_sum(pixel_sum *sum)
 {
     sum->red = sum->green = sum->blue = 0;
     sum->num = 0;
     return;
 }
 
-/* 
- * accumulate_sum - Accumulates field values of p in corresponding 
- * fields of sum 
+/*
+ * accumulate_sum - Accumulates field values of p in corresponding
+ * fields of sum
  */
-static void accumulate_sum(pixel_sum *sum, pixel p) 
+static void accumulate_sum(pixel_sum *sum, pixel p)
 {
     sum->red += (int) p.red;
     sum->green += (int) p.green;
@@ -200,10 +226,10 @@ static void accumulate_sum(pixel_sum *sum, pixel p)
     return;
 }
 
-/* 
- * assign_sum_to_pixel - Computes averaged pixel value in current_pixel 
+/*
+ * assign_sum_to_pixel - Computes averaged pixel value in current_pixel
  */
-static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum) 
+static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum)
 {
     current_pixel->red = (unsigned short) (sum.red/sum.num);
     current_pixel->green = (unsigned short) (sum.green/sum.num);
@@ -211,18 +237,18 @@ static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum)
     return;
 }
 
-/* 
- * avg - Returns averaged pixel value at (i,j) 
+/*
+ * avg - Returns averaged pixel value at (i,j)
  */
-static pixel avg(int dim, int i, int j, pixel *src) 
+static pixel avg(int dim, int i, int j, pixel *src)
 {
     int ii, jj;
     pixel_sum sum;
     pixel current_pixel;
 
     initialize_pixel_sum(&sum);
-    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++) 
-	for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++) 
+    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++)
+	for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++)
 	    accumulate_sum(&sum, src[RIDX(ii, jj, dim)]);
 
     assign_sum_to_pixel(&current_pixel, sum);
@@ -234,10 +260,10 @@ static pixel avg(int dim, int i, int j, pixel *src)
  ******************************************************/
 
 /*
- * naive_smooth - The naive baseline version of smooth 
+ * naive_smooth - The naive baseline version of smooth
  */
 char naive_smooth_descr[] = "naive_smooth: Naive baseline implementation";
-void naive_smooth(int dim, pixel *src, pixel *dst) 
+void naive_smooth(int dim, pixel *src, pixel *dst)
 {
     int i, j;
 
